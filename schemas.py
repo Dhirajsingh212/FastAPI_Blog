@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 
 
+# USER MODELS
 class UserRequest(BaseModel):
     username: str = Field(min_length=5)
     firstname: str
@@ -14,6 +15,7 @@ class UserResponse(BaseModel):
     lastname: str
 
 
+# SECURITY MODELS
 class PasswordRequest(BaseModel):
     password: str
     new_password: str
@@ -22,3 +24,9 @@ class PasswordRequest(BaseModel):
 class Token(BaseModel):
     access_token: str
     token_type: str
+
+
+# BLOG MODELS
+class BlogRequest(BaseModel):
+    title: str
+    description: str

@@ -6,16 +6,16 @@ class Users(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String, unique=True)
-    firstname = Column(String)
-    lastname = Column(String)
-    password = Column(String)
+    username = Column(String, unique=True, nullable=False)
+    firstname = Column(String, nullable=False)
+    lastname = Column(String, nullable=False)
+    password = Column(String, nullable=False)
 
 
 class Blogs(Base):
     __tablename__ = "blogs"
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String)
-    Description = Column(String)
-    owner_id = Column(Integer, ForeignKey("users.id"))
+    title = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
