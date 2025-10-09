@@ -4,11 +4,12 @@ from schemas import BlogRequest
 from db.models import Blogs
 from typing import Optional
 from sqlalchemy import or_
+from starlette import status
 
 router = APIRouter(prefix="/blogs", tags=["blogs"])
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_200_OK)
 async def create_new_blog(
     user: user_dependency, db: db_dependency, blog_request: BlogRequest
 ):
@@ -25,7 +26,7 @@ async def create_new_blog(
     db.commit()
 
 
-@router.get("/all")
+@router.get("/all", status_code=status.HTTP_200_OK)
 async def get_all_blog(
     user: user_dependency,
     db: db_dependency,
@@ -58,7 +59,7 @@ async def get_all_blog(
     }
 
 
-@router.get("/{blog_id}")
+@router.get("/{blog_id}", status_code=status.HTTP_200_OK)
 async def get_blog_by_id(
     user: user_dependency, db: db_dependency, blog_id: int = Path(gt=0)
 ):
@@ -77,7 +78,7 @@ async def get_blog_by_id(
     return blog_data
 
 
-@router.put("/{blog_id}")
+@router.put("/{blog_id}", status_code=status.HTTP_200_OK)
 async def update_blog_by_id(
     user: user_dependency,
     db: db_dependency,
@@ -104,7 +105,7 @@ async def update_blog_by_id(
     db.commit()
 
 
-@router.delete("/{blog_id}")
+@router.delete("/{blog_id}", status_code=status.HTTP_200_OK)
 async def delete_blog_by_id(
     user: user_dependency, db: db_dependency, blog_id: int = Path(gt=0)
 ):

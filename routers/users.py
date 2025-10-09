@@ -3,11 +3,12 @@ from dependency import db_dependency, user_dependency
 from schemas import UserRequest, UserResponse, PasswordRequest
 from db.models import Users
 from auth.auth_util import password_hash
+from starlette import status
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_200_OK)
 async def create_new_user(db: db_dependency, user_request: UserRequest):
     if (
         db.query(Users).filter(Users.username == user_request.username).first()
@@ -26,7 +27,7 @@ async def create_new_user(db: db_dependency, user_request: UserRequest):
     db.commit()
 
 
-@router.get("/")
+@router.get("/", status_code=status.HTTP_200_OK)
 async def get_user_info(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=400, detail="User not authenticated")
@@ -43,7 +44,7 @@ async def get_user_info(user: user_dependency, db: db_dependency):
     )
 
 
-@router.put("/forgot_password")
+@router.put("/forgot_password", status_code=status.HTTP_200_OK)
 async def change_password(
     user: user_dependency, db: db_dependency, request: PasswordRequest
 ):
@@ -63,7 +64,7 @@ async def change_password(
     db.commit()
 
 
-@router.get("/all")
+@router.get("/all", status_code=status.HTTP_200_OK)
 async def get_all_users(user: user_dependency, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=404, detail="User not authorized")
