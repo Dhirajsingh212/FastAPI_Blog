@@ -2,6 +2,8 @@ from fastapi import APIRouter, HTTPException, Path, Query
 from dependency import user_dependency, db_dependency
 from schemas import BlogRequest
 from db.models import Blogs
+from typing import Optional
+from sqlalchemy import or_
 
 router = APIRouter(prefix="/blogs", tags=["blogs"])
 
@@ -29,25 +31,30 @@ async def get_all_blog(
     db: db_dependency,
     page_number: int = Query(0, ge=0),
     page_size: int = Query(10, gt=0, le=100),
+    search: Optional[str] = Query(
+        None, description="Search item for blog title or description"
+    ),
 ):
     if user is None:
         raise HTTPException(status_code=400, detail="User not authenticated")
 
-    blog_data = (
-        db.query(Blogs)
-        .filter(Blogs.owner_id == user.get("id"))
-        .offset(page_number * page_size)
-        .limit(page_size)
-        .all()
-    )
+    query = db.query(Blogs).filter(Blogs.owner_id == user.get("id"))
 
-    total_count = db.query(Blogs).filter(Blogs.owner_id == user.get("id")).count()
+    if search:
+        search_term = f"%{search}%"
+        query = query.filter(
+            or_(Blogs.title.ilike(search_term), Blogs.description.ilike(search_term))
+        )
+
+    total_count = query.count()
+
+    blogs = query.offset(page_number * page_size).limit(page_size).all()
 
     return {
         "page_number": page_number,
         "page_size": page_size,
         "total_records": total_count,
-        "data": blog_data,
+        "data": blogs,
     }
 
 
