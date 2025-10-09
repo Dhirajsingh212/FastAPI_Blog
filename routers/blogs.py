@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, HTTPException, Path, Query
 from dependency import user_dependency, db_dependency
 from schemas import BlogRequest
 from db.models import Blogs
@@ -24,12 +24,31 @@ async def create_new_blog(
 
 
 @router.get("/all")
-async def get_all_blog(user: user_dependency, db: db_dependency):
+async def get_all_blog(
+    user: user_dependency,
+    db: db_dependency,
+    page_number: int = Query(0, ge=0),
+    page_size: int = Query(10, gt=0, le=100),
+):
     if user is None:
         raise HTTPException(status_code=400, detail="User not authenticated")
 
-    blog_data = db.query(Blogs).filter(Blogs.owner_id == user.get("id")).all()
-    return blog_data
+    blog_data = (
+        db.query(Blogs)
+        .filter(Blogs.owner_id == user.get("id"))
+        .offset(page_number * page_size)
+        .limit(page_size)
+        .all()
+    )
+
+    total_count = db.query(Blogs).filter(Blogs.owner_id == user.get("id")).count()
+
+    return {
+        "page_number": page_number,
+        "page_size": page_size,
+        "total_records": total_count,
+        "data": blog_data,
+    }
 
 
 @router.get("/{blog_id}")
