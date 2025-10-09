@@ -30,3 +30,10 @@ class Token(BaseModel):
 class BlogRequest(BaseModel):
     title: str
     description: str
+
+
+# COMMENTS MODELS
+
+
+class CommentRequest(BaseModel):
+    description: str

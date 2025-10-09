@@ -19,3 +19,12 @@ class Blogs(Base):
     title = Column(String, nullable=False)
     description = Column(String, nullable=False)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+
+class Comments(Base):
+    __tablename__ = "comments"
+
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(String, nullable=False)
+    blog_id = Column(Integer, ForeignKey("blogs.id"), nullable=False)
+    owner_id = Column(Integer, ForeignKey("users.id"), nullable=False)
